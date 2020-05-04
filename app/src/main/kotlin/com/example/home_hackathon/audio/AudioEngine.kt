@@ -13,10 +13,10 @@ class AudioEngine {
         engineHandle = start()
     }
 
-    fun setToneOn(isToneOn: Boolean) {
-        setToneOn(engineHandle, isToneOn)
+    fun setToneOn(key: Int, isToneOn: Boolean) {
+        setToneOn(engineHandle, key, isToneOn)
     }
 
     private external fun start(): Long
-    private external fun setToneOn(engineHandle: Long, isToneOn: Boolean)
+    private external fun setToneOn(engineHandle: Long, key: Int, isToneOn: Boolean)
 }

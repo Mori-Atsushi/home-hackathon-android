@@ -23,8 +23,8 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.keyC.setOnTouchListener { _, motionEvent ->
             when (motionEvent?.action) {
-                MotionEvent.ACTION_DOWN -> viewModel.touchDown()
-                MotionEvent.ACTION_UP -> viewModel.touchUp()
+                MotionEvent.ACTION_DOWN -> viewModel.touch(64, true)
+                MotionEvent.ACTION_UP -> viewModel.touch(64, false)
             }
             false
         }

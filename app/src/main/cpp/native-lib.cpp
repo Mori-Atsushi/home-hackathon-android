@@ -12,9 +12,9 @@ Java_com_example_home_1hackathon_audio_AudioEngine_start(JNIEnv *env, jobject th
 JNIEXPORT void JNICALL
 Java_com_example_home_1hackathon_audio_AudioEngine_setToneOn(
         JNIEnv *env, jobject thiz,
-        jlong engine_handle,
+        jlong engine_handle, jint key,
         jboolean is_tone_on) {
     AudioEngine *engine = reinterpret_cast<AudioEngine *>(engine_handle);
-    engine->tap(69, is_tone_on);
+    engine->tap(key, is_tone_on);
 }
 }
