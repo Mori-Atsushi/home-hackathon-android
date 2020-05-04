@@ -1,16 +1,18 @@
 package com.example.home_hackathon.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.home_hackathon.audio.AudioEngine
 import com.example.home_hackathon.repository.EventRepository
-import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val repository: EventRepository
+    private val repository: EventRepository,
+    private val audioEngine: AudioEngine
 ) : ViewModel() {
-    init {
-        viewModelScope.launch {
-            repository.ping()
-        }
+    fun touchDown() {
+        audioEngine.setToneOn(true)
+    }
+
+    fun touchUp() {
+        audioEngine.setToneOn(false)
     }
 }
