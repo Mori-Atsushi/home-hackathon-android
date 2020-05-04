@@ -1,0 +1,28 @@
+syntax = "proto3";
+package app;
+option go_package = ".;pb";
+
+service AppService {
+    rpc Ping (PingRequest) returns (PingResponse);
+    rpc Event (stream EventRequest) returns (stream EventResponse);
+}
+
+message PingRequest {
+}
+
+message PingResponse {
+    string message = 1;
+}
+
+message EventRequest {
+    Event event = 1;
+}
+
+message EventResponse {
+    Event event = 1;
+}
+
+message Event {
+    int32 soundId = 1;
+    bool isDown = 2;
+}
