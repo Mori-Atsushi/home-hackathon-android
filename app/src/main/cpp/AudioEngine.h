@@ -3,7 +3,8 @@
 
 #include <oboe/Oboe.h>
 #include <memory>
-#include "Oscillator.h"
+#include <math.h>
+#include "SoundGenerator.h"
 #include "DefaultAudioStreamCallback.h"
 
 class AudioEngine : public IRestartable {
@@ -14,10 +15,10 @@ public:
 
     void restart() override;
 
-    void tap(bool isDown);
+    void tap(int32_t key, bool isDown);
 
 private:
-    std::shared_ptr<Oscillator> mOscillator;
+    std::shared_ptr<SoundGenerator> mSoundGenerator;
 };
 
 #endif //HOME_HACKATHON_AUDIO_ENGINE_H

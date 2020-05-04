@@ -12,11 +12,8 @@ AudioEngine::AudioEngine() {
 
     oboe::AudioStream *stream = nullptr;
     builder.openStream(&stream);
-    mOscillator = std::make_shared<Oscillator>();
-    mOscillator->setFrequency(880.0);
-    mOscillator->setSampleRate(stream->getSampleRate());
-    mOscillator->setAmplitude(0.5);
-    callback->setSource(mOscillator);
+    mSoundGenerator = std::make_shared<SoundGenerator>(stream->getSampleRate());
+    callback->setSource(mSoundGenerator);
     stream->start();
 }
 
@@ -26,6 +23,6 @@ void AudioEngine::start() {
 void AudioEngine::restart() {
 }
 
-void AudioEngine::tap(bool isDown) {
-    mOscillator->setWaveOn(isDown);
+void AudioEngine::tap(int32_t key, bool isDown) {
+    mSoundGenerator->tap(key, isDown);
 }

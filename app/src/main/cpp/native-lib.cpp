@@ -15,6 +15,6 @@ Java_com_example_home_1hackathon_audio_AudioEngine_setToneOn(
         jlong engine_handle,
         jboolean is_tone_on) {
     AudioEngine *engine = reinterpret_cast<AudioEngine *>(engine_handle);
-    engine->tap(is_tone_on);
+    engine->tap(69, is_tone_on);
 }
 }

@@ -1,5 +1,6 @@
 package com.example.home_hackathon.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -14,19 +15,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by inject()
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
-    }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        when (event?.action) {
-            MotionEvent.ACTION_DOWN -> viewModel.touchDown()
-            MotionEvent.ACTION_UP -> viewModel.touchUp()
+        binding.keyC.setOnTouchListener { _, motionEvent ->
+            when (motionEvent?.action) {
+                MotionEvent.ACTION_DOWN -> viewModel.touchDown()
+                MotionEvent.ACTION_UP -> viewModel.touchUp()
+            }
+            false
         }
-        return super.onTouchEvent(event)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
