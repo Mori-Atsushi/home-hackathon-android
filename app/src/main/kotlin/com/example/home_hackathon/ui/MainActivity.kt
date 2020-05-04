@@ -5,6 +5,7 @@ import android.os.PersistableBundle
 import android.util.Log
 import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
+import org.koin.android.ext.android.inject
 import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
@@ -14,11 +15,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val viewModel: MainViewModel by inject()
     private var engineHandle by Delegates.notNull<Long>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         engineHandle = start()
+        viewModel
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
