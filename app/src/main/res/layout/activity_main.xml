@@ -93,9 +93,126 @@
             android:layout_height="0dp"
             app:isTouch="@{value -> viewModel.touch(71, value)}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/key_c2"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toEndOf="@id/key_a"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/key_c2"
+            style="@style/white_key"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:isTouch="@{value -> viewModel.touch(72, value)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toEndOf="@id/key_b"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Space
+            android:id="@+id/space_c"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/key_c"
+            app:layout_constraintStart_toStartOf="@id/key_c"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/key_db"
+            style="@style/black_key"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:isTouch="@{value -> viewModel.touch(61, value)}"
+            app:layout_constraintBottom_toTopOf="@id/guideline_blackKey"
+            app:layout_constraintEnd_toStartOf="@id/key_eb"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toStartOf="@id/space_c"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/key_eb"
+            style="@style/black_key"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:isTouch="@{value -> viewModel.touch(63, value)}"
+            app:layout_constraintBottom_toTopOf="@id/guideline_blackKey"
+            app:layout_constraintEnd_toStartOf="@id/space_e"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toEndOf="@id/key_db"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Space
+            android:id="@+id/space_e"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/key_e"
+            app:layout_constraintStart_toStartOf="@id/key_e"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Space
+            android:id="@+id/space_f"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/key_f"
+            app:layout_constraintStart_toStartOf="@id/key_f"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/key_gb"
+            style="@style/black_key"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:isTouch="@{value -> viewModel.touch(66, value)}"
+            app:layout_constraintBottom_toTopOf="@id/guideline_blackKey"
+            app:layout_constraintEnd_toStartOf="@id/key_ab"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toEndOf="@id/space_f"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <FrameLayout
+            android:id="@+id/key_ab"
+            style="@style/black_key"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:isTouch="@{value -> viewModel.touch(68, value)}"
+            app:layout_constraintBottom_toTopOf="@id/guideline_blackKey"
+            app:layout_constraintEnd_toStartOf="@id/key_bb"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toEndOf="@id/key_gb"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <FrameLayout
+            android:id="@+id/key_bb"
+            style="@style/black_key"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:isTouch="@{value -> viewModel.touch(70, value)}"
+            app:layout_constraintBottom_toTopOf="@id/guideline_blackKey"
+            app:layout_constraintEnd_toStartOf="@id/space_b"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toEndOf="@id/key_ab"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Space
+            android:id="@+id/space_b"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/key_b"
+            app:layout_constraintStart_toStartOf="@id/key_b"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_blackKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
