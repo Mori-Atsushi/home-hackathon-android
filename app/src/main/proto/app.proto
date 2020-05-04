@@ -1,6 +1,7 @@
 syntax = "proto3";
 package app;
 option go_package = ".;pb";
+option java_package = "com.example.home_hackathon.pb";
 
 service AppService {
     rpc Ping (PingRequest) returns (PingResponse);

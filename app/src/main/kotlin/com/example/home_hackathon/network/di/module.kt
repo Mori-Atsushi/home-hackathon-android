@@ -1,6 +1,6 @@
 package com.example.home_hackathon.network.di
 
-import app.AppServiceGrpc
+import com.example.home_hackathon.pb.AppServiceGrpcKt.AppServiceCoroutineStub
 import io.grpc.Channel
 import io.grpc.ManagedChannelBuilder
 import org.koin.dsl.module
@@ -17,6 +17,6 @@ val networkModule = module {
     }
 
     single {
-        AppServiceGrpc.newStub(get<Channel>())
+        AppServiceCoroutineStub(get())
     }
 }
