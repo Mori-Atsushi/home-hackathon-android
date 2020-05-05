@@ -22,4 +22,15 @@
         <item name="android:background">@drawable/black_key_background</item>
     </style>
 
+    <style name="page_button" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:insetLeft">5dp</item>
+        <item name="android:insetRight">5dp</item>
+        <item name="android:insetBottom">5dp</item>
+        <item name="android:insetTop">5dp</item>
+        <item name="android:backgroundTint">@color/page_button</item>
+        <item name="cornerRadius">20dp</item>
+    </style>
+
 </resources>
