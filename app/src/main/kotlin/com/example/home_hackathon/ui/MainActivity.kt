@@ -33,18 +33,40 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setupViews()
+        bindViewModel()
+    }
+
+    private fun setupViews() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.viewModel = viewModel
         binding.keyboards.also {
             it.isUserInputEnabled = false
             it.adapter = keyboardController.adapter
             keyboardController.requestModelBuild()
-            it.setCurrentItem(3, false)
+            it.setCurrentItem(viewModel.currentPageValue, false)
         }
         binding.users.adapter = userController.adapter
+    }
+
+    private fun bindViewModel() {
+        binding.buttonLeft.setOnClickListener {
+            viewModel.leftPage()
+        }
+
+        binding.buttonRight.setOnClickListener {
+            viewModel.rightPage()
+        }
 
         viewModel.users
             .onEach { userController.setData(it) }
+            .launchIn(lifecycleScope)
+
+        viewModel.currentPage
+            .onEach { binding.keyboards.currentItem = it }
+            .launchIn(lifecycleScope)
+
+        viewModel.currentPage
+            .onEach { binding.pageNum.text = it.toString() }
             .launchIn(lifecycleScope)
     }
 
