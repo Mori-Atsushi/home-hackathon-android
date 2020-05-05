@@ -6,9 +6,11 @@ import com.example.home_hackathon.audio.AudioEngine
 import com.example.home_hackathon.model.Event
 import com.example.home_hackathon.model.Sound
 import com.example.home_hackathon.repository.EventRepository
+import com.example.home_hackathon.ui.user.UserViewData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -23,17 +25,52 @@ class MainViewModel(
         .broadcastIn(viewModelScope)
         .asFlow()
 
+    private val usersChannel: ConflatedBroadcastChannel<List<UserViewData>> =
+        ConflatedBroadcastChannel(listOf())
+    val users: Flow<List<UserViewData>> = usersChannel.asFlow()
+
     init {
         receiveFlow
             .filterIsInstance<Event.SoundEvent>()
             .onEach { audioEngine.setToneOn(it.sound.soundID, it.sound.isDown) }
             .launchIn(viewModelScope)
+
+        receiveFlow.scan(emptyList<UserViewData>()) { acc, value ->
+            acc.updated(value)
+        }.onEach {
+            usersChannel.send(it)
+        }.launchIn(viewModelScope)
     }
 
     fun touch(key: Int, isDown: Boolean) {
         val sound = Sound(soundID = key, isDown = isDown)
         viewModelScope.launch {
             inputChannel.send(sound)
+        }
+    }
+
+    private fun List<UserViewData>.updated(event: Event): List<UserViewData> {
+        return when (event) {
+            is Event.SoundEvent -> updated(event)
+            is Event.UserEvent -> updated(event)
+        }
+    }
+
+    private fun List<UserViewData>.updated(event: Event.UserEvent): List<UserViewData> {
+        return event.userIDs.map { id ->
+            this.find { viewData ->
+                viewData.id == id
+            } ?: UserViewData(id)
+        }
+    }
+
+    private fun List<UserViewData>.updated(event: Event.SoundEvent): List<UserViewData> {
+        return this.map { viewData ->
+            if (event.userID == viewData.id) {
+                viewData.updated(event.sound)
+            } else {
+                viewData
+            }
         }
     }
 }
