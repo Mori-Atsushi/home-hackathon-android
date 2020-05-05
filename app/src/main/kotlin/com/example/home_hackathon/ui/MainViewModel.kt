@@ -3,34 +3,37 @@ package com.example.home_hackathon.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.home_hackathon.audio.AudioEngine
-import com.example.home_hackathon.pb.App.Event
+import com.example.home_hackathon.model.Event
+import com.example.home_hackathon.model.Sound
 import com.example.home_hackathon.repository.EventRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
+@FlowPreview
 class MainViewModel(
     repository: EventRepository,
     private val audioEngine: AudioEngine
 ) : ViewModel() {
-    private val channel = Channel<Event>(Channel.BUFFERED)
+    private val inputChannel: Channel<Sound> = Channel(Channel.BUFFERED)
+    private val receiveFlow: Flow<Event> = repository.event(inputChannel.consumeAsFlow())
+        .broadcastIn(viewModelScope)
+        .asFlow()
 
     init {
-        repository.event(channel.consumeAsFlow())
-            .onEach { audioEngine.setToneOn(it.soundId, it.isDown) }
+        receiveFlow
+            .filterIsInstance<Event.SoundEvent>()
+            .onEach { audioEngine.setToneOn(it.sound.soundID, it.sound.isDown) }
             .launchIn(viewModelScope)
     }
 
     fun touch(key: Int, isDown: Boolean) {
-        val event = Event.newBuilder().also {
-            it.soundId = key
-            it.isDown = isDown
-        }.build()
-
+        val sound = Sound(soundID = key, isDown = isDown)
         viewModelScope.launch {
-            channel.send(event)
+            inputChannel.send(sound)
         }
     }
 }
