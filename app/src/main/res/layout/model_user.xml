@@ -8,13 +8,18 @@
         <variable
             name="number"
             type="Integer" />
+
+        <variable
+            name="isDown"
+            type="Boolean" />
     </data>
 
     <FrameLayout
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_margin="5dp"
-        android:background="#333333">
+        android:background="@drawable/user_background"
+        app:transition_background="@{isDown}">
 
         <TextView
             android:layout_width="wrap_content"

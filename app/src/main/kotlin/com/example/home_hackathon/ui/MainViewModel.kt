@@ -6,6 +6,7 @@ import com.example.home_hackathon.audio.AudioEngine
 import com.example.home_hackathon.model.Event
 import com.example.home_hackathon.model.Sound
 import com.example.home_hackathon.repository.EventRepository
+import com.example.home_hackathon.ui.user.UserViewData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
@@ -24,18 +25,45 @@ class MainViewModel(
         .broadcastIn(viewModelScope)
         .asFlow()
 
-    private val usersChannel: ConflatedBroadcastChannel<List<String>> = ConflatedBroadcastChannel()
-    val users: Flow<List<String>> = usersChannel.asFlow()
+    private val soundFlow = receiveFlow.filterIsInstance<Event.SoundEvent>()
+    private val userFlow = receiveFlow.filterIsInstance<Event.UserEvent>()
+
+    private val usersChannel: ConflatedBroadcastChannel<List<UserViewData>> =
+        ConflatedBroadcastChannel(listOf())
+    val users: Flow<List<UserViewData>> = usersChannel.asFlow()
 
     init {
-        receiveFlow
-            .filterIsInstance<Event.SoundEvent>()
+        soundFlow
             .onEach { audioEngine.setToneOn(it.sound.soundID, it.sound.isDown) }
             .launchIn(viewModelScope)
 
-        receiveFlow
-            .filterIsInstance<Event.UserEvent>()
-            .onEach { usersChannel.send(it.userIDs) }
+        userFlow
+            .map { event ->
+                val lastValue = usersChannel.value
+                event.userIDs.map { id ->
+                    lastValue.find { viewData ->
+                        viewData.id == id
+                    } ?: UserViewData(id)
+                }
+            }
+            .onEach {
+                usersChannel.send(it)
+            }
+            .launchIn(viewModelScope)
+
+        soundFlow
+            .map { event ->
+                usersChannel.value.map { viewData ->
+                    if (event.userID == viewData.id) {
+                        viewData.updated(event.sound)
+                    } else {
+                        viewData
+                    }
+                }
+            }
+            .onEach {
+                usersChannel.send(it)
+            }
             .launchIn(viewModelScope)
     }
 
