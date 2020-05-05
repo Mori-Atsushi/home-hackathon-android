@@ -16,6 +16,7 @@ object ViewBindingAdapter {
         view.setOnTouchListener { _, motionEvent ->
             when (motionEvent?.action) {
                 MotionEvent.ACTION_DOWN -> listener.onChange(true)
+                MotionEvent.ACTION_CANCEL,
                 MotionEvent.ACTION_UP -> listener.onChange(false)
             }
             false
