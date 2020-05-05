@@ -9,6 +9,7 @@ import com.example.home_hackathon.repository.EventRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -23,10 +24,18 @@ class MainViewModel(
         .broadcastIn(viewModelScope)
         .asFlow()
 
+    private val usersChannel: ConflatedBroadcastChannel<List<String>> = ConflatedBroadcastChannel()
+    val users: Flow<List<String>> = usersChannel.asFlow()
+
     init {
         receiveFlow
             .filterIsInstance<Event.SoundEvent>()
             .onEach { audioEngine.setToneOn(it.sound.soundID, it.sound.isDown) }
+            .launchIn(viewModelScope)
+
+        receiveFlow
+            .filterIsInstance<Event.UserEvent>()
+            .onEach { usersChannel.send(it.userIDs) }
             .launchIn(viewModelScope)
     }
 
