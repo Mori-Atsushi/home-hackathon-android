@@ -20,6 +20,11 @@ class MainViewModel(
     repository: EventRepository,
     private val audioEngine: AudioEngine
 ) : ViewModel() {
+    companion object {
+        private const val START_PAGE = 3
+        private const val MAX_PAGE = 6
+    }
+
     private val inputChannel: Channel<Sound> = Channel(Channel.BUFFERED)
     private val receiveFlow: Flow<Event> = repository.event(inputChannel.consumeAsFlow())
         .broadcastIn(viewModelScope)
@@ -28,6 +33,18 @@ class MainViewModel(
     private val usersChannel: ConflatedBroadcastChannel<List<UserViewData>> =
         ConflatedBroadcastChannel(listOf())
     val users: Flow<List<UserViewData>> = usersChannel.asFlow()
+
+    private val currentPageChannel: ConflatedBroadcastChannel<Int> =
+        ConflatedBroadcastChannel(START_PAGE)
+    val currentPage: Flow<Int> = currentPageChannel.asFlow()
+    val currentPageValue: Int get() = currentPageChannel.value
+
+    val isEnabledLeft: Flow<Boolean> = currentPage.map {
+        it > 0
+    }.distinctUntilChanged()
+    val isEnableRight: Flow<Boolean> = currentPage.map {
+        it < MAX_PAGE
+    }.distinctUntilChanged()
 
     init {
         receiveFlow
@@ -46,6 +63,24 @@ class MainViewModel(
         val sound = Sound(soundID = key, isDown = isDown)
         viewModelScope.launch {
             inputChannel.send(sound)
+        }
+    }
+
+    fun leftPage() {
+        val value = currentPageValue
+        if (value <= 0) return
+
+        viewModelScope.launch {
+            currentPageChannel.send(value - 1)
+        }
+    }
+
+    fun rightPage() {
+        val value = currentPageValue
+        if (value >= MAX_PAGE) return
+
+        viewModelScope.launch {
+            currentPageChannel.send(value + 1)
         }
     }
 

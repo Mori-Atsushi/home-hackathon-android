@@ -7,6 +7,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.example.home_hackathon.R
 import com.example.home_hackathon.databinding.ActivityMainBinding
+import com.example.home_hackathon.ui.keyboard.KeyboardController
+import com.example.home_hackathon.ui.keyboard.KeyboardListener
 import com.example.home_hackathon.ui.user.UserController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -22,16 +24,57 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by inject()
 
     private val userController = UserController()
+    private val keyboardController = KeyboardController(object : KeyboardListener {
+        override fun onChangeKey(key: Int, isDown: Boolean) {
+            viewModel.touch(key, isDown)
+        }
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setupViews()
+        bindViewModel()
+    }
+
+    private fun setupViews() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.viewModel = viewModel
+        binding.keyboards.also {
+            it.isUserInputEnabled = false
+            it.adapter = keyboardController.adapter
+            keyboardController.requestModelBuild()
+            it.setCurrentItem(viewModel.currentPageValue, false)
+        }
         binding.users.adapter = userController.adapter
+    }
+
+    private fun bindViewModel() {
+        binding.buttonLeft.setOnClickListener {
+            viewModel.leftPage()
+        }
+
+        binding.buttonRight.setOnClickListener {
+            viewModel.rightPage()
+        }
 
         viewModel.users
             .onEach { userController.setData(it) }
+            .launchIn(lifecycleScope)
+
+        viewModel.currentPage
+            .onEach { binding.keyboards.currentItem = it }
+            .launchIn(lifecycleScope)
+
+        viewModel.currentPage
+            .onEach { binding.pageNum.text = it.toString() }
+            .launchIn(lifecycleScope)
+
+        viewModel.isEnabledLeft
+            .onEach { binding.buttonLeft.isEnabled = it }
+            .launchIn(lifecycleScope)
+
+        viewModel.isEnableRight
+            .onEach { binding.buttonRight.isEnabled = it }
             .launchIn(lifecycleScope)
     }
 
