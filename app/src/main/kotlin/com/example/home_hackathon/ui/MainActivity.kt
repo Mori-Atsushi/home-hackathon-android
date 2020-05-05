@@ -35,8 +35,12 @@ class MainActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
-        binding.keyboards.adapter = keyboardController.adapter
-        keyboardController.requestModelBuild()
+        binding.keyboards.also {
+            it.isUserInputEnabled = false
+            it.adapter = keyboardController.adapter
+            keyboardController.requestModelBuild()
+            it.setCurrentItem(3, false)
+        }
         binding.users.adapter = userController.adapter
 
         viewModel.users
