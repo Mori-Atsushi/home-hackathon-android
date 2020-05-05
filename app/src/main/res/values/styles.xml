@@ -30,6 +30,7 @@
         <item name="android:insetBottom">5dp</item>
         <item name="android:insetTop">5dp</item>
         <item name="android:backgroundTint">@color/page_button</item>
+        <item name="android:textColor">@color/white</item>
         <item name="cornerRadius">20dp</item>
     </style>
 

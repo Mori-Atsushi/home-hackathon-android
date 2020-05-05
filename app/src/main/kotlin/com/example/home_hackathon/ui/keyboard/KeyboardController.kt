@@ -8,7 +8,7 @@ class KeyboardController(
 ) : EpoxyController() {
     companion object {
         private const val START_KEY = 24
-        private const val END_KEY = 108
+        private const val END_KEY = 96
         private const val KEY_STEP = 12
     }
 

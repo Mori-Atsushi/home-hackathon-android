@@ -22,7 +22,7 @@ class MainViewModel(
 ) : ViewModel() {
     companion object {
         private const val START_PAGE = 3
-        private const val MAX_PAGE = 7
+        private const val MAX_PAGE = 6
     }
 
     private val inputChannel: Channel<Sound> = Channel(Channel.BUFFERED)
@@ -38,6 +38,13 @@ class MainViewModel(
         ConflatedBroadcastChannel(START_PAGE)
     val currentPage: Flow<Int> = currentPageChannel.asFlow()
     val currentPageValue: Int get() = currentPageChannel.value
+
+    val isEnabledLeft: Flow<Boolean> = currentPage.map {
+        it > 0
+    }.distinctUntilChanged()
+    val isEnableRight: Flow<Boolean> = currentPage.map {
+        it < MAX_PAGE
+    }.distinctUntilChanged()
 
     init {
         receiveFlow

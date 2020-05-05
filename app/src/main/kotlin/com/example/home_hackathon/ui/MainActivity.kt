@@ -68,6 +68,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.currentPage
             .onEach { binding.pageNum.text = it.toString() }
             .launchIn(lifecycleScope)
+
+        viewModel.isEnabledLeft
+            .onEach { binding.buttonLeft.isEnabled = it }
+            .launchIn(lifecycleScope)
+
+        viewModel.isEnableRight
+            .onEach { binding.buttonRight.isEnabled = it }
+            .launchIn(lifecycleScope)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
