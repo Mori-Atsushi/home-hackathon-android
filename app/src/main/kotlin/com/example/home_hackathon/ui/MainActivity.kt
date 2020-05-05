@@ -7,6 +7,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.example.home_hackathon.R
 import com.example.home_hackathon.databinding.ActivityMainBinding
+import com.example.home_hackathon.ui.keyboard.KeyboardController
+import com.example.home_hackathon.ui.keyboard.KeyboardListener
 import com.example.home_hackathon.ui.user.UserController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -22,12 +24,19 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by inject()
 
     private val userController = UserController()
+    private val keyboardController = KeyboardController(object : KeyboardListener {
+        override fun onChangeKey(key: Int, isDown: Boolean) {
+            viewModel.touch(key, isDown)
+        }
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
+        binding.keyboards.adapter = keyboardController.adapter
+        keyboardController.requestModelBuild()
         binding.users.adapter = userController.adapter
 
         viewModel.users
