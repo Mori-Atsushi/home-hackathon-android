@@ -3,7 +3,7 @@ package com.example.home_hackathon.ui.keyboard
 import com.example.home_hackathon.model.Event
 
 data class KeyboardViewData(
-    private val keys: List<Key> = List(KEY_NUM) { Key() }
+    val keys: List<Key> = List(KEY_NUM) { Key() }
 ) {
     companion object {
         const val KEY_NUM = 104
@@ -34,5 +34,9 @@ data class KeyboardViewData(
             }
         }
         return copy(keys = keys)
+    }
+
+    fun subList(fromKey: Int, toKey: Int): List<Key> {
+        return keys.subList(fromKey - START_KEY, toKey - START_KEY)
     }
 }
