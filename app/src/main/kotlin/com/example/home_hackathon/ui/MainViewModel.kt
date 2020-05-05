@@ -6,6 +6,7 @@ import com.example.home_hackathon.audio.AudioEngine
 import com.example.home_hackathon.model.Event
 import com.example.home_hackathon.model.Sound
 import com.example.home_hackathon.repository.EventRepository
+import com.example.home_hackathon.ui.keyboard.KeyboardViewData
 import com.example.home_hackathon.ui.user.UserViewData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -30,8 +31,12 @@ class MainViewModel(
         .broadcastIn(viewModelScope)
         .asFlow()
 
+    private val keyboardChannel: ConflatedBroadcastChannel<KeyboardViewData> =
+        ConflatedBroadcastChannel()
+    val keyboard: Flow<KeyboardViewData> = keyboardChannel.asFlow()
+
     private val usersChannel: ConflatedBroadcastChannel<List<UserViewData>> =
-        ConflatedBroadcastChannel(listOf())
+        ConflatedBroadcastChannel()
     val users: Flow<List<UserViewData>> = usersChannel.asFlow()
 
     private val currentPageChannel: ConflatedBroadcastChannel<Int> =
@@ -52,11 +57,16 @@ class MainViewModel(
             .onEach { audioEngine.setToneOn(it.sound.soundID, it.sound.isDown) }
             .launchIn(viewModelScope)
 
-        receiveFlow.scan(emptyList<UserViewData>()) { acc, value ->
-            acc.updated(value)
-        }.onEach {
-            usersChannel.send(it)
-        }.launchIn(viewModelScope)
+        receiveFlow
+            .filterIsInstance<Event.SoundEvent>()
+            .scan(KeyboardViewData()) { acc, value -> acc.updated(value) }
+            .onEach { keyboardChannel.send(it) }
+            .launchIn(viewModelScope)
+
+        receiveFlow
+            .scan(emptyList<UserViewData>()) { acc, value -> acc.updated(value) }
+            .onEach { usersChannel.send(it) }
+            .launchIn(viewModelScope)
     }
 
     fun touch(key: Int, isDown: Boolean) {
