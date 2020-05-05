@@ -5,6 +5,7 @@ import android.graphics.drawable.TransitionDrawable
 import android.view.MotionEvent
 import android.view.View
 import androidx.databinding.BindingAdapter
+import com.example.home_hackathon.R
 
 object ViewBindingAdapter {
     private const val ANIMATION_DURATION_MILLIS = 100
@@ -26,14 +27,17 @@ object ViewBindingAdapter {
     @BindingAdapter("transition_background")
     @JvmStatic
     fun setIsTransitionBackground(view: View, value: Boolean) {
+        val lastValue = view.getTag(R.id.tag_transition_background) as? Boolean ?: false
+        if (value == lastValue) return
+
         val drawable = view.background as? TransitionDrawable ?: return
-        drawable.isCrossFadeEnabled = true
         if (value) {
             drawable.startTransition(ANIMATION_DURATION_MILLIS)
         } else {
-            drawable.startTransition(0)
             drawable.reverseTransition(ANIMATION_DURATION_MILLIS)
         }
+
+        view.setTag(R.id.tag_transition_background, value)
     }
 
     interface IsTouchListener {
