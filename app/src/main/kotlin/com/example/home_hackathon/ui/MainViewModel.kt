@@ -25,52 +25,52 @@ class MainViewModel(
         .broadcastIn(viewModelScope)
         .asFlow()
 
-    private val soundFlow = receiveFlow.filterIsInstance<Event.SoundEvent>()
-    private val userFlow = receiveFlow.filterIsInstance<Event.UserEvent>()
-
     private val usersChannel: ConflatedBroadcastChannel<List<UserViewData>> =
         ConflatedBroadcastChannel(listOf())
     val users: Flow<List<UserViewData>> = usersChannel.asFlow()
 
     init {
-        soundFlow
+        receiveFlow
+            .filterIsInstance<Event.SoundEvent>()
             .onEach { audioEngine.setToneOn(it.sound.soundID, it.sound.isDown) }
             .launchIn(viewModelScope)
 
-        userFlow
-            .map { event ->
-                val lastValue = usersChannel.value
-                event.userIDs.map { id ->
-                    lastValue.find { viewData ->
-                        viewData.id == id
-                    } ?: UserViewData(id)
-                }
-            }
-            .onEach {
-                usersChannel.send(it)
-            }
-            .launchIn(viewModelScope)
-
-        soundFlow
-            .map { event ->
-                usersChannel.value.map { viewData ->
-                    if (event.userID == viewData.id) {
-                        viewData.updated(event.sound)
-                    } else {
-                        viewData
-                    }
-                }
-            }
-            .onEach {
-                usersChannel.send(it)
-            }
-            .launchIn(viewModelScope)
+        receiveFlow.scan(emptyList<UserViewData>()) { acc, value ->
+            acc.updated(value)
+        }.onEach {
+            usersChannel.send(it)
+        }.launchIn(viewModelScope)
     }
 
     fun touch(key: Int, isDown: Boolean) {
         val sound = Sound(soundID = key, isDown = isDown)
         viewModelScope.launch {
             inputChannel.send(sound)
+        }
+    }
+
+    private fun List<UserViewData>.updated(event: Event): List<UserViewData> {
+        return when (event) {
+            is Event.SoundEvent -> updated(event)
+            is Event.UserEvent -> updated(event)
+        }
+    }
+
+    private fun List<UserViewData>.updated(event: Event.UserEvent): List<UserViewData> {
+        return event.userIDs.map { id ->
+            this.find { viewData ->
+                viewData.id == id
+            } ?: UserViewData(id)
+        }
+    }
+
+    private fun List<UserViewData>.updated(event: Event.SoundEvent): List<UserViewData> {
+        return this.map { viewData ->
+            if (event.userID == viewData.id) {
+                viewData.updated(event.sound)
+            } else {
+                viewData
+            }
         }
     }
 }
