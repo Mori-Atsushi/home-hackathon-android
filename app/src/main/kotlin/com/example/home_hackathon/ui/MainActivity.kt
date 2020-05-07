@@ -4,17 +4,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
 import com.example.home_hackathon.R
 import com.example.home_hackathon.databinding.ActivityMainBinding
+import com.example.home_hackathon.ui.ext.bind
 import com.example.home_hackathon.ui.keyboard.KeyboardController
 import com.example.home_hackathon.ui.keyboard.KeyboardListener
 import com.example.home_hackathon.ui.keyboard.KeyboardViewData
 import com.example.home_hackathon.ui.user.UserController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.koin.android.viewmodel.ext.android.viewModel
 
 @FlowPreview
@@ -58,29 +56,20 @@ class MainActivity : AppCompatActivity() {
             viewModel.rightPage()
         }
 
-        viewModel.keyboard
-            .onEach { keyboardController.setData(it) }
-            .launchIn(lifecycleScope)
-
-        viewModel.users
-            .onEach { userController.setData(it) }
-            .launchIn(lifecycleScope)
-
-        viewModel.currentPage
-            .onEach { binding.keyboards.currentItem = it }
-            .launchIn(lifecycleScope)
-
-        viewModel.currentPage
-            .onEach { binding.pageNum.text = it.toString() }
-            .launchIn(lifecycleScope)
-
-        viewModel.isEnabledLeft
-            .onEach { binding.buttonLeft.isEnabled = it }
-            .launchIn(lifecycleScope)
-
-        viewModel.isEnableRight
-            .onEach { binding.buttonRight.isEnabled = it }
-            .launchIn(lifecycleScope)
+        bind(viewModel.keyboard, keyboardController::setData)
+        bind(viewModel.users, userController::setData)
+        bind(viewModel.currentPage) {
+            binding.keyboards.currentItem = it
+        }
+        bind(viewModel.currentPage) {
+            binding.pageNum.text = it.toString()
+        }
+        bind(viewModel.isEnabledLeft) {
+            binding.buttonLeft.isEnabled = it
+        }
+        bind(viewModel.isEnableRight) {
+            binding.buttonRight.isEnabled = it
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
