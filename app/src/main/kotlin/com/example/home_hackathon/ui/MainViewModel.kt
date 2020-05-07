@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.home_hackathon.audio.AudioEngine
 import com.example.home_hackathon.model.Event
+import com.example.home_hackathon.model.Keyboard
 import com.example.home_hackathon.model.Sound
+import com.example.home_hackathon.model.User
 import com.example.home_hackathon.repository.EventRepository
-import com.example.home_hackathon.ui.keyboard.KeyboardViewData
-import com.example.home_hackathon.ui.user.UserViewData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
@@ -49,13 +49,13 @@ class MainViewModel(
     val isLoading: Flow<Boolean> = isLoadingChannel.asFlow()
         .distinctUntilChanged()
 
-    private val keyboardChannel: ConflatedBroadcastChannel<KeyboardViewData> =
+    private val keyboardChannel: ConflatedBroadcastChannel<Keyboard> =
         ConflatedBroadcastChannel()
-    val keyboard: Flow<KeyboardViewData> = keyboardChannel.asFlow()
+    val keyboard: Flow<Keyboard> = keyboardChannel.asFlow()
 
-    private val usersChannel: ConflatedBroadcastChannel<List<UserViewData>> =
+    private val usersChannel: ConflatedBroadcastChannel<List<User>> =
         ConflatedBroadcastChannel()
-    val users: Flow<List<UserViewData>> = usersChannel.asFlow()
+    val users: Flow<List<User>> = usersChannel.asFlow()
 
     private val currentPageChannel: ConflatedBroadcastChannel<Int> =
         ConflatedBroadcastChannel(START_PAGE)
@@ -77,12 +77,12 @@ class MainViewModel(
 
         receiveFlow
             .filterIsInstance<Event.SoundEvent>()
-            .scan(KeyboardViewData()) { acc, value -> acc.updated(value) }
+            .scan(Keyboard()) { acc, value -> acc.updated(value) }
             .onEach { keyboardChannel.send(it) }
             .launchIn(viewModelScope)
 
         receiveFlow
-            .scan(emptyList<UserViewData>()) { acc, value -> acc.updated(value) }
+            .scan(emptyList<User>()) { acc, value -> acc.updated(value) }
             .onEach { usersChannel.send(it) }
             .launchIn(viewModelScope)
     }
@@ -115,22 +115,22 @@ class MainViewModel(
         }
     }
 
-    private fun List<UserViewData>.updated(event: Event): List<UserViewData> {
+    private fun List<User>.updated(event: Event): List<User> {
         return when (event) {
             is Event.SoundEvent -> updated(event)
             is Event.UserEvent -> updated(event)
         }
     }
 
-    private fun List<UserViewData>.updated(event: Event.UserEvent): List<UserViewData> {
+    private fun List<User>.updated(event: Event.UserEvent): List<User> {
         return event.userIDs.map { id ->
             this.find { viewData ->
                 viewData.id == id
-            } ?: UserViewData(id)
+            } ?: User(id)
         }
     }
 
-    private fun List<UserViewData>.updated(event: Event.SoundEvent): List<UserViewData> {
+    private fun List<User>.updated(event: Event.SoundEvent): List<User> {
         return this.map { viewData ->
             if (event.userID == viewData.id) {
                 viewData.updated(event.sound)

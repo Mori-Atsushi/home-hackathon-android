@@ -1,9 +1,9 @@
-package com.example.home_hackathon.ui.keyboard
+package com.example.home_hackathon.model
 
-import com.example.home_hackathon.model.Event
-
-data class KeyboardViewData(
-    val keys: List<Key> = List(KEY_NUM) { Key() }
+data class Keyboard(
+    val keys: List<Key> = List(
+        KEY_NUM
+    ) { Key() }
 ) {
     companion object {
         const val KEY_NUM = 104
@@ -25,7 +25,7 @@ data class KeyboardViewData(
         val isEnable: Boolean = enableUserIds.isNotEmpty()
     }
 
-    fun updated(event: Event.SoundEvent): KeyboardViewData {
+    fun updated(event: Event.SoundEvent): Keyboard {
         val keys = keys.mapIndexed { index, key ->
             if (index + START_KEY == event.sound.soundID) {
                 key.updated(event)

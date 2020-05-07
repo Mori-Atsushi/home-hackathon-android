@@ -11,7 +11,7 @@
 
         <variable
             name="keys"
-            type="com.example.home_hackathon.ui.keyboard.KeyboardViewData.Key[]" />
+            type="com.example.home_hackathon.model.Keyboard.Key[]" />
 
         <variable
             name="listener"

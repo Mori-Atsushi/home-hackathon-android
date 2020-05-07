@@ -1,12 +1,10 @@
-package com.example.home_hackathon.ui.user
+package com.example.home_hackathon.model
 
-import com.example.home_hackathon.model.Sound
-
-data class UserViewData(
+data class User(
     val id: String,
     val sounds: List<Int> = listOf()
 ) {
-    fun updated(sound: Sound): UserViewData {
+    fun updated(sound: Sound): User {
         val sounds = if (sound.isDown) {
             sounds + sound.soundID
         } else {
