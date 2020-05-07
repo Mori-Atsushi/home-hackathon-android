@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import com.example.home_hackathon.R
 import com.example.home_hackathon.databinding.ActivityMainBinding
 import com.example.home_hackathon.ui.ext.bind
+import com.example.home_hackathon.ui.ext.setVisibleGone
 import com.example.home_hackathon.ui.keyboard.KeyboardController
 import com.example.home_hackathon.ui.keyboard.KeyboardListener
 import com.example.home_hackathon.ui.user.UserController
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         bind(viewModel.isEnableRight) {
             binding.buttonRight.isEnabled = it
         }
+        bind(viewModel.isLoading, binding.progressBar::setVisibleGone)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

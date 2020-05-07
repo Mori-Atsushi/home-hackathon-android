@@ -30,12 +30,24 @@ class MainViewModel(
 
     private val inputChannel: Channel<Sound> = Channel(Channel.BUFFERED)
     private val receiveFlow: Flow<Event> = repository.event(inputChannel.receiveAsFlow())
+        .catch { e ->
+            isLoadingChannel.send(true)
+            throw e
+        }
         .retry {
             delay(RETRY_TIME_MILLIS)
             true
         }
+        .onEach {
+            isLoadingChannel.send(false)
+        }
         .broadcastIn(viewModelScope)
         .asFlow()
+
+    private val isLoadingChannel: ConflatedBroadcastChannel<Boolean> =
+        ConflatedBroadcastChannel(true)
+    val isLoading: Flow<Boolean> = isLoadingChannel.asFlow()
+        .distinctUntilChanged()
 
     private val keyboardChannel: ConflatedBroadcastChannel<KeyboardViewData> =
         ConflatedBroadcastChannel()
@@ -77,6 +89,9 @@ class MainViewModel(
 
     fun touch(key: Int, isDown: Boolean) {
         val sound = Sound(soundID = key, isDown = isDown)
+        val isLoading = isLoadingChannel.value
+        if (isLoading) return
+
         viewModelScope.launch {
             inputChannel.send(sound)
         }
