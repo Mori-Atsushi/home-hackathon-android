@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -24,10 +25,15 @@ class MainViewModel(
     companion object {
         private const val START_PAGE = 3
         private const val MAX_PAGE = 6
+        private const val RETRY_TIME_MILLIS = 1000L
     }
 
     private val inputChannel: Channel<Sound> = Channel(Channel.BUFFERED)
-    private val receiveFlow: Flow<Event> = repository.event(inputChannel.consumeAsFlow())
+    private val receiveFlow: Flow<Event> = repository.event(inputChannel.receiveAsFlow())
+        .retry {
+            delay(RETRY_TIME_MILLIS)
+            true
+        }
         .broadcastIn(viewModelScope)
         .asFlow()
 
