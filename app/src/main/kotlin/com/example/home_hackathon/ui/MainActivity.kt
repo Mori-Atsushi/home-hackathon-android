@@ -9,7 +9,6 @@ import com.example.home_hackathon.databinding.ActivityMainBinding
 import com.example.home_hackathon.ui.ext.bind
 import com.example.home_hackathon.ui.keyboard.KeyboardController
 import com.example.home_hackathon.ui.keyboard.KeyboardListener
-import com.example.home_hackathon.ui.keyboard.KeyboardViewData
 import com.example.home_hackathon.ui.user.UserController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -41,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         binding.keyboards.also {
             it.isUserInputEnabled = false
             it.adapter = keyboardController.adapter
-            keyboardController.setData(KeyboardViewData())
+            keyboardController.setData(null)
             it.setCurrentItem(viewModel.currentPageValue, false)
         }
         binding.users.adapter = userController.adapter

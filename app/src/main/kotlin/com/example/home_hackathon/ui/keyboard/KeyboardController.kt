@@ -12,13 +12,13 @@ class KeyboardController(
         private const val KEY_STEP = 12
     }
 
-    override fun buildModels(data: KeyboardViewData) {
+    override fun buildModels(data: KeyboardViewData?) {
         for (i in START_KEY..END_KEY step KEY_STEP) {
-            val keys = data.subList(i, i + KEY_STEP + 1)
+            val keys = data?.subList(i, i + KEY_STEP + 1)?.toTypedArray()
             keyboard {
                 id(i)
                 startKey(i)
-                keys(keys.toTypedArray())
+                keys(keys)
                 listener(listener)
             }
         }
