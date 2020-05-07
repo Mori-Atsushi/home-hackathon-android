@@ -23,6 +23,7 @@ data class Keyboard(
         }
 
         val isEnable: Boolean = enableUserIds.isNotEmpty()
+        val isOneUser: Boolean = enableUserIds.size == 1
     }
 
     fun updated(event: Event.SoundEvent): Keyboard {
@@ -34,6 +35,10 @@ data class Keyboard(
             }
         }
         return copy(keys = keys)
+    }
+
+    operator fun get(key: Int): Key {
+        return keys[key - START_KEY]
     }
 
     fun subList(fromKey: Int, toKey: Int): List<Key> {

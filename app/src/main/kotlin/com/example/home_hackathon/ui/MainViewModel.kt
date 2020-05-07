@@ -69,12 +69,7 @@ class MainViewModel(
     init {
         receiveFlow
             .filterIsInstance<Event.SoundEvent>()
-            .onEach { audioEngine.setToneOn(it.sound.soundID, it.sound.isDown) }
-            .launchIn(viewModelScope)
-
-        receiveFlow
-            .filterIsInstance<Event.SoundEvent>()
-            .scan(Keyboard()) { acc, value -> acc.updated(value) }
+            .scan(Keyboard()) { acc, value -> handleSoundEvent(acc, value) }
             .onEach { keyboardChannel.send(it) }
             .launchIn(viewModelScope)
 
@@ -110,5 +105,19 @@ class MainViewModel(
         viewModelScope.launch {
             currentPageChannel.send(value + 1)
         }
+    }
+
+    private fun handleSoundEvent(keyboard: Keyboard, event: Event.SoundEvent): Keyboard {
+        val id = event.sound.soundID
+        val key = keyboard[id]
+        when {
+            event.sound.isDown && !key.isEnable -> {
+                audioEngine.setToneOn(id, true)
+            }
+            !event.sound.isDown && key.isOneUser -> {
+                audioEngine.setToneOn(id, false)
+            }
+        }
+        return keyboard.updated(event)
     }
 }
