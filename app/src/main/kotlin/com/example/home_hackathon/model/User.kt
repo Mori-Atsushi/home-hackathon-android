@@ -13,3 +13,28 @@ data class User(
         return copy(sounds = sounds)
     }
 }
+
+fun List<User>.updated(event: Event): List<User> {
+    return when (event) {
+        is Event.SoundEvent -> updated(event)
+        is Event.UserEvent -> updated(event)
+    }
+}
+
+private fun List<User>.updated(event: Event.UserEvent): List<User> {
+    return event.userIDs.map { id ->
+        this.find { viewData ->
+            viewData.id == id
+        } ?: User(id)
+    }
+}
+
+private fun List<User>.updated(event: Event.SoundEvent): List<User> {
+    return this.map { viewData ->
+        if (event.userID == viewData.id) {
+            viewData.updated(event.sound)
+        } else {
+            viewData
+        }
+    }
+}
